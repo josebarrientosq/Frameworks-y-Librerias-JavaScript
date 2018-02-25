@@ -50,9 +50,11 @@ function desaparece(elemento){
 }
 
 function arriba(elemento){
+	console.log("arriba")
   $(elemento).animate(
     {
       top: "-=10"
+
     }, 500, function(){
       abajo(elemento)
     }
@@ -60,6 +62,7 @@ function arriba(elemento){
 }
 
 function abajo(elemento){
+	console.log("abajo")
   $(elemento).animate(
     {
       top: "+=10"
@@ -70,25 +73,9 @@ function abajo(elemento){
 }
 
 
-function mostrar(){
-	$( ".caramelo" ).detach();
-	//for (j=0 ;j<7 ;j++)
-	//	$(".col-"+(j+1)).empty()
 
-	for (i=0 ;i<7;i++)
-			for (j=0 ;j<7 ;j++){
-				$(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>");
-				console.log(matriz[i][j])
-			}
 
-			$(".caramelo").draggable();
-			arriba($(".caramelo"))
 
-}
-
-function borrar(){
-	$( ".caramelo" ).detach();
-}
 
 $(function(){
 
@@ -97,12 +84,12 @@ $(function(){
 			for (j=0 ;j<7 ;j++){
 				matriz[i][j]=Math.floor(Math.random()*3+1)
 				matriz2[i][j]=matriz[i][j]
-				$(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>");
+			//	$(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>");
 
 		}
 		
-		//mostrar()
-		$(".caramelo").draggable();
+		mostrar()
+		//$(".caramelo").draggable();
 
 
 
@@ -132,7 +119,7 @@ $(function(){
 			//	console.log($(".col-"+j+">.caramelo:nth-child("+i+")").attr("src").substring(6,7)  )
 				matriz[i-1][j-1]=$(".col-"+j+">.caramelo:nth-child("+i+")").attr("src").substring(6,7)
 */
-		borrar()
+		borrartodo()
 
     	
 
@@ -199,8 +186,12 @@ $(function(){
 		
 	//	$(".caramelo").droppable({accept: ".caramelo" });
 
- 	$(".caramelo").mousedown(function(){
+ 	$(".columna").on("mousedown",".caramelo",function(){
+ 		console.log("clickabajo")
  		ficha1=this
+ 		$(".columna").on("hover",".caramelo",function(){
+ 			console.log("hola")
+ 		});
  	//	temporal=ficha1.clone();
   		//console.log($(ficha1).parent())
   		pos1=$(".caramelo" ).index( this )
@@ -210,7 +201,8 @@ $(function(){
   		//$(this).toggle();  
   	}); 
 
-  $(".caramelo").mouseup(function(){
+  $(".columna").on("mouseup",".caramelo",function(){
+  		console.log("clickarriba")
   		pos2=$(".caramelo" ).index( this )
   		x2=Math.floor(pos2/7)
   		y2=pos2-7*x2
@@ -219,6 +211,7 @@ $(function(){
   		matriz[y2][x2]=matriz[y1][x1]
   		matriz[y1][x1]=temp
   		
+  		borrartodo()
   		mostrar()
   		
   	//	ficha2.after(ficha1);
@@ -230,3 +223,28 @@ $(function(){
   	});
 
 });
+
+
+
+function borrartodo(){
+	$( ".caramelo" ).remove();
+	console.log("borrado")
+}
+
+function mostrar(){
+	console.log("mostrar1")
+	//$( ".caramelo" ).detach();
+	//for (j=0 ;j<7 ;j++)
+	//	$(".col-"+(j+1)).empty()
+	//borrar()
+
+	for (i=0 ;i<7;i++)
+			for (j=0 ;j<7 ;j++){
+				$(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>");
+				//console.log(matriz[i][j])
+			}
+
+			$(".caramelo").draggable({delay : 1000,})
+
+			
+}
