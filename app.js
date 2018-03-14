@@ -22,6 +22,14 @@ var matriz2=[fila1b,fila2b,fila3b,fila4b,fila5b,fila6b,fila7b]
 var i=0;j=0;k=0;z=0;
 var x1=0;y1=0;x2=0;y2=0;pos1=0;pos2=0; 
 
+var hayrepetido=true
+var minutos=0 ; segundos=10
+var buscar; rellenar 
+var reloj
+var movimientos=0 ;puntaje=0
+var jugando=true
+
+
 
 function numero(obj){
 	return obj.src.substring(obj.src.length-5,obj.src.length-4)
@@ -49,84 +57,74 @@ function desaparece(elemento){
 	)
 }
 
-function arriba(elemento){
-	console.log("arriba")
-  $(elemento).animate(
-    {
-      top: "-=10"
+function amarillo(elemento){
+	$(elemento).animate(
+    	{
+      	color: "yellow"
 
-    }, 500, function(){
-      abajo(elemento)
-    }
-  )
+   		 }, 500, function(){
+    	 	 blanco(elemento)
+   		 }
+  		)
+  	
 }
 
-function abajo(elemento){
+function blanco(elemento){
 	console.log("abajo")
   $(elemento).animate(
     {
-      top: "+=10"
+      color: "white"
     }, 500, function(){
-      arriba(elemento)
+      amarillo(elemento)
     }
   )
 }
 
+function pulso1(){
+	$("#timer").text(minutos+":"+segundos)
+	if(minutos==0 && segundos==0)
+		final()
+	
+	segundos--
+
+	if(segundos==-1){
+		minutos--
+		segundos=59
+	}
+
+	
+
+	setTimeout(pulso2, 500)
+
+}
+function pulso2(){
+	
+	reloj=setTimeout(pulso1, 500)
+}
 
 
+function pulso3(){
+	if(hayrepetido){
+		buscar=setTimeout(buscarrepetidos, 500)
+  		rellenar=setTimeout(rellenar,1500)
+  	}
 
 
+	setTimeout(pulso4, 1000)
 
-$(function(){
+}
+function pulso4(){
+	
+	setTimeout(pulso3, 1000)
+}
 
 
+function buscarrepetidos(){
+	hayrepetido=false
 	for (i=0 ;i<7;i++)
-			for (j=0 ;j<7 ;j++){
-				matriz[i][j]=Math.floor(Math.random()*3+1)
+			for (j=0 ;j<7 ;j++)
 				matriz2[i][j]=matriz[i][j]
-			//	$(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>");
 
-		}
-		
-		mostrar()
-		//$(".caramelo").draggable();
-
-
-
-
-/*
-	$('.parpadeo').each(function() {
-    var elem = $(this);
-    setInterval(function() {
-        if (elem.css('visibility') == 'hidden') {
-            elem.css('visibility', 'visible');
-        } else {
-            elem.css('visibility', 'hidden');
-        }    
-    }, 500);
-});
-*/
-
-
-	$(".btn-reinicio").click(function(){
-		//$(this).toggle(); 
-    	//$(".caramelo:last-of-type").after("<img src='image/1.png' class='caramelo'/>");
-    	//$(".col-2").append("<img src='image/1.png' class='caramelo'/>");
-    	
-    	//console.log($(".col-1>.caramelo"))
-    	/*for (var i=1 ;i<8 ;i++)
-			for (var j=1 ;j<8 ;j++)
-			//	console.log($(".col-"+j+">.caramelo:nth-child("+i+")").attr("src").substring(6,7)  )
-				matriz[i-1][j-1]=$(".col-"+j+">.caramelo:nth-child("+i+")").attr("src").substring(6,7)
-*/
-		borrartodo()
-
-    	
-
-  });
-
-  	
-  $(".btn-reinicio2").click(function(){
   		for (i=0 ;i<7 ;i++)
 			for (j=0 ;j<7 ;j++){
 				k=0
@@ -138,7 +136,7 @@ $(function(){
 					for(var z=0 ; z<=k; z++)
 						matriz[i][j+z]=9
 				}
-				console.log(matriz[i][j])
+				
 			}
 
 
@@ -155,13 +153,17 @@ $(function(){
 					for(var z=0 ; z<=k; z++)
 						matriz2[i+z][j]=9
 				}
-				console.log(matriz[i][j])
+				
 			}
 
 		for (j=0 ;j<7 ;j++)
 			for (i=0 ;i<7 ;i++){
-				if(matriz[i][j]==9 || matriz2[i][j]==9)
+				if(matriz[i][j]==9 || matriz2[i][j]==9){
 					matriz[i][j]=9
+					hayrepetido=true
+					puntaje=puntaje+10
+					$("#score-text").text(puntaje)
+				}
 			}
 
 
@@ -169,13 +171,190 @@ $(function(){
 		for (i=1 ;i<=7 ;i++)
 			for (j=1 ;j<=7 ;j++){
 				if(matriz[i-1][j-1]==9){
-					arriba($(".col-"+j+">.caramelo:nth-child("+i+")"))
+					$(".col-"+j+">.caramelo:nth-child("+i+")").toggle( "pulsate" )
+						
 				}
-				//console.log(matriz[i-1][j-1])
-				//console.log($(".col-"+j+">.caramelo:nth-child("+i+")"))
+			
 			}
+
+}
+
+function rellenar(){
+	for(j=0 ; j<7; j++)
+			for (i=6 ; i >=0 ; i--)
+				while(matriz[i][j]==9){
+					for(z=0;i-z>0; z++){
+						matriz[i-z][j]=matriz[i-z-1][j]
+						
+					}
+
+					//$(".col-"+(j+1)+">.caramelo:nth-child("+(i+1)+")").remove()
+					//matriz[0][j]=Math.floor(Math.random()*3+1)
+					matriz[0][j]=8
+				}
+
+		borrartablero()
+		mostrar()
+}
+function final(){
+	$(".panel-tablero").hide("slow")
+	$(".time").hide()
+	$("#fin").show()
+	$(".panel-score").css("width" ,"100%")
+
+}
+
+function reiniciar(){
+	puntaje=0
+	$("#score-text").text(puntaje)
+
+	minutos=0
+	segundos=10
+
+	movimientos=0
+	$("#movimientos-text").text(movimientos)
+
+	$(".time").show()
+	$(".panel-tablero").show("slow")
+	$("#fin").hide()
+	$(".panel-score").css("width" ,"25%")
+	reiniciartablero()
+
+
+}
+
+function reiniciartablero(){
+	for (i=0 ;i<7;i++)
+			for (j=0 ;j<7 ;j++){
+				matriz[i][j]=Math.floor(Math.random()*3+1)
+				
+			//	$(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>");
+
+		}
+		borrartablero()
+		mostrar()
+}
+
+$(function(){
+
+$(".panel-score").prepend('<h2 class="main-titulo" id="fin"> Juego Terminado</h2>')
+$("#fin").hide()
+
+amarillo($("#titulo"))
+
+reiniciartablero()
+	
+//pulso1()
+//pulso3()
+
+
+	$(".btn-reinicio").click(function(){
+		
+	
+		if(jugando){	
+			pulso1()
+			pulso3()
+			jugando=false
+			$(".btn-reinicio").text("reiniciar")
+			clearTimeout(buscar)
+			clearTimeout(rellenar)
+			clearTimeout(reloj)
+		}
+		else{
+			reiniciar()
+			jugando=true
+			$(".btn-reinicio").text("iniciar")
+		}
+	
+
+
+
+		//reiniciar()
+
+    	
+
   });
 
+  	
+  $(".btn-reinicio2").click(function(){
+
+  		for (i=0 ;i<7;i++)
+			for (j=0 ;j<7 ;j++)
+				matriz2[i][j]=matriz[i][j]
+
+  		for (i=0 ;i<7 ;i++)
+			for (j=0 ;j<7 ;j++){
+				k=0
+				while(matriz[i][j+k]==matriz[i][j+k+1] && j+k+1<7){
+					k++
+				}
+				
+				if(k>=2){
+					for(var z=0 ; z<=k; z++)
+						matriz[i][j+z]=9
+				}
+				
+			}
+
+
+		for (j=0 ;j<7 ;j++)
+			for (i=0 ;i<5 ;i++){
+				k=0
+
+				while( matriz2[i+k][j]==matriz2[i+k+1][j]&&(i+k+1)<7){
+					k++
+					if(i+k+1==7) break;
+				}
+				
+				if(k>=2){
+					for(var z=0 ; z<=k; z++)
+						matriz2[i+z][j]=9
+				}
+				
+			}
+
+		for (j=0 ;j<7 ;j++)
+			for (i=0 ;i<7 ;i++){
+				if(matriz[i][j]==9 || matriz2[i][j]==9)
+					matriz[i][j]=9
+					
+			}
+
+
+
+		for (i=1 ;i<=7 ;i++)
+			for (j=1 ;j<=7 ;j++){
+				if(matriz[i-1][j-1]==9){
+					$(".col-"+j+">.caramelo:nth-child("+i+")").toggle( "pulsate" )
+						
+				}
+			
+			}
+
+		
+
+  });
+	
+
+	$(".btn-reinicio3").click(function(){
+		for(j=0 ; j<7; j++)
+			for (i=6 ; i >=0 ; i--)
+				while(matriz[i][j]==9){
+					for(z=0;i-z>0; z++){
+						matriz[i-z][j]=matriz[i-z-1][j]
+						
+					}
+
+					//$(".col-"+(j+1)+">.caramelo:nth-child("+(i+1)+")").remove()
+					//matriz[0][j]=Math.floor(Math.random()*3+1)
+					matriz[0][j]=8
+				}
+
+		borrartablero()
+		mostrar()
+
+
+	});
   
 	//for (var i=1 ;i<8 ;i++)
 	//	for (var j=1 ;j<8 ;j++){
@@ -202,6 +381,9 @@ $(function(){
   	}); 
 
   $(".columna").on("mouseup",".caramelo",function(){
+  		movimientos++
+  		$("#movimientos-text").text(movimientos)
+
   		console.log("clickarriba")
   		pos2=$(".caramelo" ).index( this )
   		x2=Math.floor(pos2/7)
@@ -211,8 +393,11 @@ $(function(){
   		matriz[y2][x2]=matriz[y1][x1]
   		matriz[y1][x1]=temp
   		
-  		borrartodo()
+  		borrartablero()
   		mostrar()
+  		setTimeout(buscarrepetidos, 500)
+  		setTimeout(rellenar,1500)
+
   		
   	//	ficha2.after(ficha1);
   	//	$(".caramelo").css( "top", "0" );
@@ -226,9 +411,25 @@ $(function(){
 
 
 
-function borrartodo(){
+function borrartablero(){
 	$( ".caramelo" ).remove();
 	console.log("borrado")
+}
+
+function vermatriz(){
+	var m=""
+	for (i=0 ;i<7;i++){
+		m=""
+			for (j=0 ;j<7 ;j++){
+				//if(j==6)
+				//	m=""+\n\
+				//else
+				m= m+matriz[i][j]
+			}
+				console.log(m+"-")
+				
+	}
+				
 }
 
 function mostrar(){
@@ -240,11 +441,33 @@ function mostrar(){
 
 	for (i=0 ;i<7;i++)
 			for (j=0 ;j<7 ;j++){
-				$(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>");
+				if(matriz[i][j]==8){
+
+					matriz[i][j]=Math.floor(Math.random()*3+1)
+					
+					//$(".col-"+(j+1)+">.caramelo:nth-child("+(i+1)+")").remove()
+					
+					//$(".col-"+(j+1)+">.caramelo:nth-child("+(i+1)+")").remove().delay(1000)
+                      // .queue(function() {
+                        //   $(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>")
+                          // $(this).dequeue();
+                      // });;
+				}
+					
+				
+					$(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>");
+				
 				//console.log(matriz[i][j])
 			}
-
-			$(".caramelo").draggable({delay : 1000,})
+/*
+	for (i=0 ;i<7;i++)
+			for (j=0 ;j<7 ;j++)
+				if(matriz[i][j]==8){
+					matriz[i][j]=Math.floor(Math.random()*3+1)
+					$(".col-"+(j+1)).append("<img src='image/"+ matriz[i][j]+".png' class='caramelo'/>");
+				}
+*/
+	$(".caramelo").draggable({delay : 1000,})
 
 			
 }
